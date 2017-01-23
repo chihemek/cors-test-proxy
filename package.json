@@ -1,0 +1,17 @@
+{
+  "name": "cors-test-proxy",
+  "version": "0.1.0",
+  "description": "Reverse proxy for dev and integration testing",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": {
+    "name": "Emma Kuo",
+    "email": "emma.kuo@ionchannel.io"
+  },
+  "license": "",
+  "dependencies": {
+    "http-proxy": "^1.15.1"
+  }
+}
