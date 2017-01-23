@@ -71,7 +71,7 @@ createProxy(router).listen(8001)
 ```
 
 `Dockerfile`:
-```
+```dockerfile
 FROM alpine:3.4
 
 RUN apk add --no-cache nodejs
