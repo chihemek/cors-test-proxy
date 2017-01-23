@@ -4,7 +4,7 @@ This is a reverse proxy for CI testing web apps against backend services.
 
 **DO NOT USE IN PRODUCTION.** This disables the security provided by CORS.
 
-## Use cases
+## Use case
 
 You would like to do development OR continuous integration testing against backend services on localhost.
 
@@ -32,6 +32,7 @@ createProxy(() => 'http://localhost:4567').listen(8001)
 
 Foward requests to one of three services depending on the prefix of the request path. In this example the three services are running on the same port, but different Docker containers. The proxy is also running in Docker.
 
+`proxy.js`:
 ```javascript
 var createProxy = require('cors-test-proxy')
 
@@ -56,4 +57,32 @@ function router(req) {
 }
 
 createProxy(router).listen(8001)
+```
+
+`package.json`:
+```json
+{
+  "name": "ion-cors-proxy",
+  "version": "0.1.0",
+  "dependencies": {
+    "cors-test-proxy": "^0.1.0"
+  }
+}
+```
+
+`Dockerfile`:
+```
+FROM alpine:3.4
+
+RUN apk add --no-cache nodejs
+
+COPY . /usr/app
+
+WORKDIR /usr/app
+
+RUN npm install
+
+CMD ["node", "proxy.js"]
+
+EXPOSE 8001
 ```
