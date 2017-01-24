@@ -10,8 +10,6 @@ You would like to do development OR continuous integration testing against backe
 
 CORS is causing issues because the webserver and backend endpoints are not running on the same port.
 
-Your backend services aren't configured to understand CORS because it's handled in production by an API gateway.
-
 While CORS can be disabled in the browser, this may be difficult or infeasible in the CI environment. This is where cors-test-proxy comes in. It's a reverse proxy for backend APIs that spoofs the required CORS responses (including preflight requests).
 
 ## Usage
@@ -30,7 +28,27 @@ createProxy(() => 'http://localhost:4567').listen(8001)
 
 ### More complex example
 
-Foward requests to one of three services depending on the prefix of the request path. In this example the three services are running on the same port, but different Docker containers. The proxy is also running in Docker.
+```
+          +--------------------+           8080
+          | webpack dev server |<---------------+
+          +--------------------+                |
+docker-compose                                  |
+..........................................      |   +---------+
+.   +---------+ 4567                     .      +---| browser |
+.   | waldorf |<---+                     .      |   +---------+
+.   +---------+    |                     .      |
+.                  |    +---------+      .      |
+.   +---------+ 4567    |  cors   |      . 8001 |
+.   | yolanda |<---+----|  test   |<------------+
+.   +---------+    |    |  proxy  |      .
+.                  |    +---------+      .
+.   +---------+ 4567                     .
+.   | janice  |<---+                     .
+.   +---------+                          .
+..........................................
+```
+
+In this example, we are testing against a cluster of microservices that are deployed as Docker images. By adding additional router logic, cors-test-proxy can stand in for the API gateway used in production. The proxy is built as a Docker image so everything can be managed with Docker Compose.
 
 `proxy.js`:
 ```javascript
