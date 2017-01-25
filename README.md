@@ -1,16 +1,16 @@
 # cors-test-proxy
 
-This is a reverse proxy for CI testing web apps against backend services.
+This is a reverse proxy for integration testing web apps against backend services.
 
-**DO NOT USE IN PRODUCTION.** This disables the security provided by CORS.
+**DO NOT USE IN PRODUCTION.** This bypasses the CORS security mechanism.
 
 ## Use case
 
-You would like to do development OR continuous integration testing against backend services on localhost.
+* You need to do selenium testing against backend API services running on localhost (not staging or prod).
+* The browser's same-origin policy is blocking AJAX calls because the webserver and backend endpoints are not running on the same port.
+* Disabling CORS in the browser is infeasible in your environment.
 
-CORS is causing issues because the webserver and backend endpoints are not running on the same port.
-
-While CORS can be disabled in the browser, this may be difficult or infeasible in the CI environment. This is where cors-test-proxy comes in. It's a reverse proxy for backend APIs that spoofs the required CORS responses (including preflight requests).
+`cors-test-proxy` solves this by disabling CORS on the backend. It's a reverse proxy for backend APIs that spoofs the required CORS responses (including preflight requests). You don't need to modify your services to handle special CORS responses for testing.
 
 ## Usage
 
@@ -18,7 +18,7 @@ The `cors-test-proxy` module exports a factory function for creating a [proxy se
 
 ### Simple example
 
-Forward all requests to `localhost:4567`. The proxy listens on port 8001.
+Suppose you have a single API service running on port 4567. This forwards all requests to `localhost:4567`. The proxy listens on port 8001.
 
 ```javascript
 var createProxy = require('cors-test-proxy')
@@ -48,7 +48,9 @@ docker-compose                                  |
 ..........................................
 ```
 
-In this example, we are testing against a cluster of microservices that are deployed as Docker images. By adding additional router logic, cors-test-proxy can stand in for the API gateway used in production. The proxy is built as a Docker image so everything can be managed with Docker Compose.
+In this example, we are testing against a cluster of microservices. By adding additional routing logic, `cors-test-proxy` can direct requests to more than one server. This mimics an API gateway that would be used in production.
+
+`cors-test-proxy` can also be built into a Docker container, as shown below.
 
 `proxy.js`:
 ```javascript
